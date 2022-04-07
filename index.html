@@ -130,10 +130,10 @@ function buildTable(data){
         diff = getDifferenceInDays(today, date1) //today.getTime() - date1.getTime()
         console.log(diff, data[i].name)
 
-        if (diff <= 9){
+        if (diff <= 30){
             var clr = "#C70039"
             }
-        else if (diff <= 30){
+        else if (diff <= 60){
             var clr = "#FAA040"
             }
         else{
