@@ -1,0 +1,157 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+<style>
+    th{ 
+        color:#fff;
+            }
+</style>
+
+<body class=bg-dark style="margin: 0px 10px 0px 10px;">
+
+
+
+    <div class="card-body bg-dark">
+
+        <input id="search-input" class="form-control bg-dark" type="text" style="color:#fff">
+
+    </div>
+
+
+    <div class="container-fluid">
+        <table class="table table-hover table-dark">
+            <tr style="background-color: #1A72B8;">
+                <th data-column="name" data-order="desc">Name  </th>
+                <th data-column="age" data-order="desc">Age  </th>
+                <th data-column="birthdate" data-order="desc">Birthday  </th>
+            </tr>
+        
+            <tbody id="myTable">
+                
+            </tbody>
+        </table>
+    </div>
+        
+</body>
+
+<script>
+//var myArray = [
+//	{'name':'Michael', 'age':'30', 'birthdate':'11/10/1989'},
+//	{'name':'Mila', 'age':'32', 'birthdate':'3/27/2022'},
+//	{'name':'Paul', 'age':'29', 'birthdate':'11/18/1990'},
+//	{'name':'Dennis', 'age':'25', 'birthdate':'11/12/1993'},
+//	{'name':'Tim', 'age':'24', 'birthdate':'03/25/1991'},
+//	{'name':'Erik', 'age':'24', 'birthdate':'04/05/2022'},
+//]
+
+
+
+var myArray = []
+
+
+$.ajax({
+	method:'GET',
+	url:'https://script.googleusercontent.com/macros/echo?user_content_key=3crnAJWF10dpSZXOhOZg4Qmd3mcWHQvwF76YgpS-0IVA1LJJUdFfDlC2-SC1CdoABdc-_-1YFBwXeFjHGzms7Hk6oJGxS4e0m5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnNveBchyvLi0SA6cd2BrxofyT4AZd58YRtgD8k1aPgSpyLfDhTUysCHs1PBeZWZPFolwzzlh99mFqngRKcdGQ4v7tFVFMave_dz9Jw9Md8uu&lib=MTJPropKsmfXHY5dpx0ZMhvv8b6ki2k_6',
+	success:function(response){
+		myArray = response
+		console.log(myArray)
+		buildTable(myArray)
+	}
+})
+
+
+$('#search-input').on('keyup', function(){
+    var value = $(this).val()
+    console.log('Value:', value)
+    var data = searchTable(value, myArray)
+    buildTable(data)
+})
+
+
+
+$('th').on('click', function(){
+    var column = $(this).data('column')
+    var order = $(this).data('order')
+    var text = $(this).html()
+    text = text.substring(0, text.length - 1)
+
+    if(order == 'desc'){
+        $(this).data('order', "asc")
+        myArray = myArray.sort((a,b) => a[column] > b[column] ? 1 : -1)
+        text += '&#9660'
+
+    }else{
+        $(this).data('order', "desc")
+        myArray = myArray.sort((a,b) => a[column] < b[column] ? 1 : -1)
+        text += '&#9650'
+    }
+    $(this).html(text)
+    buildTable(myArray)
+})
+
+
+	
+buildTable(myArray)
+
+function getDifferenceInDays(date1, date2) {
+    const diffInMs = Math.abs(date2 - date1);
+    return diffInMs / (1000 * 60 * 60 * 24);
+  }
+
+function searchTable(value, data){
+    var filteredData = []
+
+
+    for (var i = 0; i < data.length; i++){
+        value=value.toLowerCase()
+        var name = data[i].name.toLowerCase()
+
+        if (name.includes(value)){
+            filteredData.push(data[i])
+        }
+    }
+
+
+    return filteredData
+}
+
+
+function buildTable(data){
+	var table = document.getElementById('myTable')
+
+    table.innerHTML = ''
+
+    var today = new Date()
+
+	for (var i = 0; i < data.length; i++){
+        var diff = ''
+		var date1 = new Date(data[i].birthdate)
+        diff = getDifferenceInDays(today, date1) //today.getTime() - date1.getTime()
+        console.log(diff, data[i].name)
+
+        if (diff <= 9){
+            var clr = "#C70039"
+            }
+        else if (diff <= 30){
+            var clr = "#FAA040"
+            }
+        else{
+            clr = '#343A40' 
+        }
+    
+        var row = `<tr style="background-color:${clr}">
+                        <td>${data[i].name}</td>
+                        <td>${data[i].age}</td>
+                        <td>${data[i].birthdate}</td>
+                    </tr>`
+
+        table.innerHTML += row
+
+	}
+}
+
+</script>
+
+
+
